@@ -12,9 +12,10 @@ namespace EducationalNewsletterDelivery.DataLayer.Context
         public EducationalNewsletterDeliveryDBContext(DbContextOptions<EducationalNewsletterDeliveryDBContext> options) : base(options)
         {
         }
-
+        
         public DbSet<Newsletter> Newsletters { get; set; }
         public DbSet<DeliveredNewsletter> DeliveredNewsletters { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

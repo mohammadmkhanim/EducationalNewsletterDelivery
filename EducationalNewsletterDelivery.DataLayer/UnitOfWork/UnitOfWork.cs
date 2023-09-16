@@ -13,6 +13,7 @@ namespace EducationalNewsletterDelivery.DataLayer.UnitOfWork
         private EducationalNewsletterDeliveryDBContext _context;
         public IDeliveredNewsletterRepository _deliveredNewsletterRepository;
         public INewsletterRepository _newsletterRepository;
+        public IUserRepository _userRepository;
 
         public UnitOfWork(EducationalNewsletterDeliveryDBContext context)
         {
@@ -39,6 +40,17 @@ namespace EducationalNewsletterDelivery.DataLayer.UnitOfWork
                     _newsletterRepository = new NewsletterRepository(_context);
                 }
                 return _newsletterRepository;
+            }
+        }
+        public IUserRepository UserRepository
+        {
+            get
+            {
+                if (_userRepository == null)
+                {
+                    _userRepository = new UserRepository(_context);
+                }
+                return _userRepository;
             }
         }
 

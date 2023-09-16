@@ -10,6 +10,7 @@ namespace EducationalNewsletterDelivery.API.Services
         {
             CreateMap<Newsletter, NewsletterDTO>().ReverseMap();
             CreateMap<Newsletter, CreateNewsletterDTO>().ReverseMap();
+            CreateMap<User, AuthUserDTO>().ReverseMap();
         }
     }
 }

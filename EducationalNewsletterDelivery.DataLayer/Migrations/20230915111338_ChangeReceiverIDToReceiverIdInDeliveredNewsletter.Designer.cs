@@ -4,6 +4,7 @@ using EducationalNewsletterDelivery.DataLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationalNewsletterDelivery.DataLayer.Migrations
 {
     [DbContext(typeof(EducationalNewsletterDeliveryDBContext))]
-    partial class EducationalNewsletterDeliveryDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230915111338_ChangeReceiverIDToReceiverIdInDeliveredNewsletter")]
+    partial class ChangeReceiverIDToReceiverIdInDeliveredNewsletter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,26 +33,22 @@ namespace EducationalNewsletterDelivery.DataLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DeliveredDateTime")
+                    b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsSuccess")
+                        .HasColumnType("bit");
 
                     b.Property<int>("NewsletterId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("ReceivedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("SeenDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NewsletterId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("DeliveredNewsletters");
                 });
@@ -76,32 +75,6 @@ namespace EducationalNewsletterDelivery.DataLayer.Migrations
                     b.ToTable("Newsletters");
                 });
 
-            modelBuilder.Entity("EducationalNewsletterDelivery.DataLayer.Entities.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
-
             modelBuilder.Entity("EducationalNewsletterDelivery.DataLayer.Entities.DeliveredNewsletter", b =>
                 {
                     b.HasOne("EducationalNewsletterDelivery.DataLayer.Entities.Newsletter", "Newsletter")
@@ -110,20 +83,7 @@ namespace EducationalNewsletterDelivery.DataLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EducationalNewsletterDelivery.DataLayer.Entities.User", "User")
-                        .WithMany("DeliveredNewsletters")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Newsletter");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EducationalNewsletterDelivery.DataLayer.Entities.User", b =>
-                {
-                    b.Navigation("DeliveredNewsletters");
                 });
 #pragma warning restore 612, 618
         }

@@ -18,6 +18,7 @@ namespace EducationalNewsletterDelivery.API
         protected readonly IMapper _mapper;
         protected readonly ILogger<ControllerType> _logger;
         protected readonly IConfiguration _configuration;
+        protected readonly string _defaultBackendErrorMessage;
 
         protected BaseController(
             IUnitOfWork unitOfWork = null,
@@ -31,6 +32,10 @@ namespace EducationalNewsletterDelivery.API
             _configuration = configuration;
         }
 
+        protected void LogError(Exception ex)
+        {
+            _logger.LogError($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] An error occurred{ex.StackTrace}: {ex.Message}");
+        }
     }
 
 }

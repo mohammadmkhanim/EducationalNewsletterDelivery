@@ -12,19 +12,22 @@ namespace EducationalNewsletterDelivery.DataLayer.Entities
         [Key]
         public int Id { get; set; }
 
-        public string ReceiverID { get; set; }
-
         [Required]
-        public DateTime DateTime { get; set; }
+        public DateTime DeliveredDateTime { get; set; }
 
-        public bool IsSuccess { get; set; }
+        public DateTime? ReceivedDateTime { get; set; }
+
+        public DateTime? SeenDateTime { get; set; }
 
         //relations
-
         [Required]
         [ForeignKey(nameof(Newsletter))]
         public int NewsletterId { get; set; }
-        
         public Newsletter Newsletter { get; set; }
+
+        [Required]
+        [ForeignKey(nameof(User))]
+        public int UserId { get; set; }
+        public User User { get; set; }
     }
 }

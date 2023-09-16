@@ -7,8 +7,10 @@ using EducationalNewsletterDelivery.DataLayer.Repository.GenericRepository;
 
 namespace EducationalNewsletterDelivery.DataLayer.Repository.IRepositories
 {
-    public interface INewsletterRepository : IGenericRepository<Newsletter>
+    public interface IUserRepository : IGenericRepository<User>
     {
-        public Task<bool> ExistNewsletter(int id);
+        public Task<bool> ExisUserBytUsername(string username);
+        public Task<bool> ExistUserById(int id);
+        public Task<User?> GetUserByUsernameAndPassword(string username, string password);
     }
 }

@@ -10,6 +10,7 @@ namespace EducationalNewsletterDelivery.DataLayer.UnitOfWork
     {
         public IDeliveredNewsletterRepository DeliveredNewsletterRepository { get; }
         public INewsletterRepository NewsletterRepository { get; }
+        public IUserRepository UserRepository { get; }
         public Task SaveAsync();
     }
 }
