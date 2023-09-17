@@ -9,7 +9,7 @@ namespace EducationalNewsletterDelivery.DataLayer.Entities
 {
     public enum Role
     {
-        User, Admin
+        User, Admin, SuperAdmin
     }
     public class User
     {
@@ -21,7 +21,6 @@ namespace EducationalNewsletterDelivery.DataLayer.Entities
         public string Username { get; set; }
 
         [Required]
-        [MaxLength(20)]
         public string Password { get; set; }
         
         public Role Role { get; set; }

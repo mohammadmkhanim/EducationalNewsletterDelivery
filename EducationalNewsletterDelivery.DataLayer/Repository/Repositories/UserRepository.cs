@@ -12,26 +12,40 @@ namespace EducationalNewsletterDelivery.DataLayer.Repository.Repositories
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        private DbSet<User> _users;
+        private readonly EducationalNewsletterDeliveryDBContext _context;
 
         public UserRepository(EducationalNewsletterDeliveryDBContext context) : base(context)
         {
-            _users = context.Users;
+            _context = context;
         }
 
-        public Task<User?> GetUserByUsernameAndPassword(string username, string password)
+        public async Task<User?> GetUserByUsernameAndPasswordAsync(string username, string password)
         {
-            return _users.FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
         }
 
-        public Task<bool> ExisUserBytUsername(string username)
+        public async Task<bool> ExisUserBytUsernameAsync(string username)
         {
-            return _users.AnyAsync(u => u.Username == username);
+            return await _context.Users.AnyAsync(u => u.Username == username);
         }
 
-        public Task<bool> ExistUserById(int id)
+        public async Task<bool> ExistUserByIdAsync(int id)
         {
-            return _users.AnyAsync(u => u.Id == id);
+            return await _context.Users.AnyAsync(u => u.Id == id);
+        }
+
+        public async Task PromoteUserToAdminRoleAsync(int id)
+        {
+            var user = await GetByIdAsync(id);
+            user.Role = Role.Admin;
+            Update(user);
+        }
+
+        public async Task DemoteUserToUserRoleAsync(int id)
+        {
+            var user = await GetByIdAsync(id);
+            user.Role = Role.User;
+            Update(user);
         }
     }
 }

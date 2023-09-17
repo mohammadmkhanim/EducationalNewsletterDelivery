@@ -19,6 +19,14 @@ namespace EducationalNewsletterDelivery.API
         protected readonly ILogger<ControllerType> _logger;
         protected readonly IConfiguration _configuration;
         protected readonly string _defaultBackendErrorMessage;
+        protected int _userId
+        {
+            get
+            {
+                return Convert.ToInt32(User.FindFirstValue("id"));
+            }
+        }
+
 
         protected BaseController(
             IUnitOfWork unitOfWork = null,
@@ -36,6 +44,7 @@ namespace EducationalNewsletterDelivery.API
         {
             _logger.LogError($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] An error occurred{ex.StackTrace}: {ex.Message}");
         }
+
     }
 
 }

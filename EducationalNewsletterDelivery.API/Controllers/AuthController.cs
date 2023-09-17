@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using EducationalNewsletterDelivery.API.Models;
+using EducationalNewsletterDelivery.API.Services;
 using EducationalNewsletterDelivery.DataLayer.Entities;
 using EducationalNewsletterDelivery.DataLayer.Repository.IRepositories;
 using EducationalNewsletterDelivery.DataLayer.UnitOfWork;
@@ -29,7 +30,7 @@ namespace EducationalNewsletterDelivery.API.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> Register(AuthUserDTO authUserDTO)
+    public async Task<IActionResult> RegisterAsync(AuthUserDTO authUserDTO)
     {
       try
       {
@@ -37,11 +38,13 @@ namespace EducationalNewsletterDelivery.API.Controllers
         {
           return BadRequest(ModelState);
         }
-        if (await _unitOfWork.UserRepository.ExisUserBytUsername(authUserDTO.Username))
+        if (await _unitOfWork.UserRepository.ExisUserBytUsernameAsync(authUserDTO.Username))
         {
           return BadRequest("The username has already exist.");
         }
+        authUserDTO.Password = HashService.GenerateSha256Hash(authUserDTO.Password);
         User user = _mapper.Map<User>(authUserDTO);
+        user.Role = Role.User;
         await _unitOfWork.UserRepository.AddAsync(user);
         await _unitOfWork.SaveAsync();
         var token = createToken(user);
@@ -56,7 +59,7 @@ namespace EducationalNewsletterDelivery.API.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login(AuthUserDTO authUserDTO)
+    public async Task<IActionResult> LoginAsync(AuthUserDTO authUserDTO)
     {
       try
       {
@@ -64,11 +67,13 @@ namespace EducationalNewsletterDelivery.API.Controllers
         {
           return BadRequest(ModelState);
         }
-        User? user = await _unitOfWork.UserRepository.GetUserByUsernameAndPassword(authUserDTO.Username, authUserDTO.Password);
+        authUserDTO.Password = HashService.GenerateSha256Hash(authUserDTO.Password);
+        User? user = await _unitOfWork.UserRepository.GetUserByUsernameAndPasswordAsync(authUserDTO.Username, authUserDTO.Password);
         if (user == null)
         {
           return BadRequest("The username or password is wrong.");
         }
+        await ReceiveNewslettersAsync(user.Id);
         var token = createToken(user);
         return Ok(token);
 
@@ -78,6 +83,19 @@ namespace EducationalNewsletterDelivery.API.Controllers
         LogError(ex);
         return StatusCode(500, _defaultBackendErrorMessage);
       }
+    }
+
+    private async Task ReceiveNewslettersAsync(int userId)
+    {
+      var userDeliveredNewsletters = await _unitOfWork.DeliveredNewsletterRepository.GetAsync(d => d.UserId == userId);
+      foreach (var userDeliveredNewsletter in userDeliveredNewsletters)
+      {
+        if (!await _unitOfWork.DeliveredNewsletterRepository.IsDeliveredNewsletterReceivedAsync(userDeliveredNewsletter.Id))
+        {
+          await _unitOfWork.DeliveredNewsletterRepository.MarkDeliveredNewsletterAsReceivedAsync(userDeliveredNewsletter.Id);
+        }
+      }
+      await _unitOfWork.SaveAsync();
     }
 
     private string createToken(User user)
@@ -91,13 +109,12 @@ namespace EducationalNewsletterDelivery.API.Controllers
         {
                 new Claim("Id", user.Id.ToString()),
                 new Claim("Username", user.Username),
-                new Claim("Role", user.Role.ToString()),
+                new Claim("role", user.Role.ToString()),
         },
         null,
         expires: DateTime.Now.AddDays(Convert.ToDouble(_configuration["Jwt:expires"])),
         signingCredentials: credentials);
       return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
   }
 }

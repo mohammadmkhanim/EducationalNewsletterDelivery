@@ -15,13 +15,6 @@ namespace EducationalNewsletterDelivery.DataLayer.Repository.GenericRepository
             Expression<Func<Entity, string>> orderByDescending = null,
             List<string> includeProperties = null);
 
-        public Task<List<object>> GetAsync(
-            Expression<Func<Entity, object>> select,
-            Expression<Func<Entity, bool>> filter = null,
-            Expression<Func<Entity, string>> orderBy = null,
-            Expression<Func<Entity, string>> orderByDescending = null,
-            List<string> includeProperties = null);
-
         public Task<Entity> GetByIdAsync(object id);
 
         public Task AddAsync(Entity entity);

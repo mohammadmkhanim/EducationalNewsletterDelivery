@@ -53,39 +53,6 @@ namespace EducationalNewsletterDelivery.DataLayer.Repository.GenericRepository
             return await query.AsNoTracking().ToListAsync();
         }
 
-        public virtual async Task<List<object>> GetAsync(
-            Expression<Func<Entity, object>> select,
-            Expression<Func<Entity, bool>> filter = null,
-            Expression<Func<Entity, string>> orderBy = null,
-            Expression<Func<Entity, string>> orderByDescending = null,
-            List<string> includeProperties = null)
-        {
-            IQueryable<Entity> query = _dbSet;
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            if (includeProperties != null)
-            {
-                foreach (var includeProperty in includeProperties)
-                {
-                    query = query.Include(includeProperty);
-                }
-            }
-            if (orderBy != null)
-            {
-                query = query.OrderBy(orderBy);
-            }
-            if (orderByDescending != null)
-            {
-                query = query.OrderByDescending(orderByDescending);
-            }
-
-            return await query.AsNoTracking().Select(select).ToListAsync();
-        }
-
         public virtual async Task<Entity> GetByIdAsync(object id)
         {
             return await _dbSet.FindAsync(id);

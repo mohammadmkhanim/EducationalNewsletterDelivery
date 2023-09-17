@@ -25,7 +25,8 @@ namespace EducationalNewsletterDelivery.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Send(SendNewsletterDTO sendNewsletterDTO)
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        public async Task<IActionResult> SendNewsletterToUsersAsync(SendNewsletterDTO sendNewsletterDTO)
         {
             try
             {
@@ -33,29 +34,56 @@ namespace EducationalNewsletterDelivery.API.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                if (!await _unitOfWork.NewsletterRepository.ExistNewsletter(sendNewsletterDTO.NewsletterId))
+                if (!await _unitOfWork.NewsletterRepository.ExistNewsletterByIdAsync(sendNewsletterDTO.NewsletterId))
                 {
                     return BadRequest("The newsletter does not exist.");
                 }
                 foreach (var userId in sendNewsletterDTO.UserIds)
                 {
-                    if (await _unitOfWork.UserRepository.ExistUserById(userId))
-                    {
-                        DeliveredNewsletter deliveredNewsletter = new DeliveredNewsletter()
-                        {
-                            DeliveredDateTime = DateTime.Now,
-                            NewsletterId = sendNewsletterDTO.NewsletterId,
-                            UserId = userId
-                        };
-                        await _unitOfWork.DeliveredNewsletterRepository.AddAsync(deliveredNewsletter);
-                    }
-                    else
+                    if (!await _unitOfWork.UserRepository.ExistUserByIdAsync(userId))
                     {
                         return BadRequest($"The user with {userId} does not exist.");
                     }
+                    DeliveredNewsletter deliveredNewsletter = new DeliveredNewsletter()
+                    {
+                        DeliveredDateTime = DateTime.Now,
+                        NewsletterId = sendNewsletterDTO.NewsletterId,
+                        UserId = userId
+                    };
+                    await _unitOfWork.DeliveredNewsletterRepository.AddAsync(deliveredNewsletter);
                 }
                 await _unitOfWork.SaveAsync();
                 return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return StatusCode(500, _defaultBackendErrorMessage);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetUserNewslettersAsync()
+        {
+            try
+            {
+                var deliveredNewsletters = await _unitOfWork.DeliveredNewsletterRepository.GetAsync(d => d.UserId == _userId);
+                foreach (var deliveredNewsletter in deliveredNewsletters)
+                {
+                    if (!await _unitOfWork.DeliveredNewsletterRepository.IsDeliveredNewsletterReceivedAsync(deliveredNewsletter.Id))
+                    {
+                        await _unitOfWork.DeliveredNewsletterRepository.MarkDeliveredNewsletterAsReceivedAsync(deliveredNewsletter.Id);
+                    }
+                    if (!await _unitOfWork.DeliveredNewsletterRepository.IsDeliveredNewsletterSeenAsync(deliveredNewsletter.Id))
+                    {
+                        await _unitOfWork.DeliveredNewsletterRepository.MarkDeliveredNewsletterAsSeenAsync(deliveredNewsletter.Id);
+                    }
+                }
+                await _unitOfWork.SaveAsync();
+                var userNewsletters = await _unitOfWork.NewsletterRepository.GetUserNewslettersAsync(_userId);
+                var userNewsletterDTOs = _mapper.Map<List<NewsletterDTO>>(userNewsletters);
+                return Ok(userNewsletterDTOs);
 
             }
             catch (Exception ex)

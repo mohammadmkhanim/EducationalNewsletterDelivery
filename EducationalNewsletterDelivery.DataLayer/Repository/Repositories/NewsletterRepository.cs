@@ -12,16 +12,22 @@ namespace EducationalNewsletterDelivery.DataLayer.Repository.Repositories
 {
     public class NewsletterRepository : GenericRepository<Newsletter>, INewsletterRepository
     {
-        private DbSet<Newsletter> _newsletters;
+        private readonly EducationalNewsletterDeliveryDBContext _context;
 
         public NewsletterRepository(EducationalNewsletterDeliveryDBContext context) : base(context)
         {
-            _newsletters = context.Newsletters;
+            _context = context;
         }
 
-        public Task<bool> ExistNewsletter(int id)
+        public Task<bool> ExistNewsletterByIdAsync(int id)
         {
-            return _newsletters.AnyAsync(n => n.Id == id);
+            return _context.Newsletters.AnyAsync(n => n.Id == id);
+        }
+
+        public async Task<List<Newsletter>> GetUserNewslettersAsync(int userId)
+        {
+            var userNewsletters = await _context.DeliveredNewsletters.Where(d => d.UserId == userId).Select(d => d.Newsletter).ToListAsync();
+            return userNewsletters;
         }
     }
 }

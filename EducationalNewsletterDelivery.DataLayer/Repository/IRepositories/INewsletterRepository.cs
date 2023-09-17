@@ -9,6 +9,7 @@ namespace EducationalNewsletterDelivery.DataLayer.Repository.IRepositories
 {
     public interface INewsletterRepository : IGenericRepository<Newsletter>
     {
-        public Task<bool> ExistNewsletter(int id);
+        public Task<bool> ExistNewsletterByIdAsync(int id);
+        public Task<List<Newsletter>> GetUserNewslettersAsync(int userId);
     }
 }

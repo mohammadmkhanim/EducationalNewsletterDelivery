@@ -14,7 +14,7 @@ namespace EducationalNewsletterDelivery.API.Controllers
 {
     [ApiController]
     [Route("[controller]/[Action]")]
-    [Authorize]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class NewsletterController : BaseController<NewsletterController>
     {
 
@@ -26,7 +26,7 @@ namespace EducationalNewsletterDelivery.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<NewsletterDTO>>> Get()
+        public async Task<ActionResult<IEnumerable<NewsletterDTO>>> GetAsync()
         {
             try
             {
@@ -46,7 +46,7 @@ namespace EducationalNewsletterDelivery.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<NewsletterDTO>> Get(int id)
+        public async Task<ActionResult<NewsletterDTO>> GetAsync(int id)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace EducationalNewsletterDelivery.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateNewsletterDTO createNewsletterDTO)
+        public async Task<IActionResult> CreateAsync(CreateNewsletterDTO createNewsletterDTO)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace EducationalNewsletterDelivery.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(NewsletterDTO newsletterDTO)
+        public async Task<IActionResult> UpdateAsync(NewsletterDTO newsletterDTO)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace EducationalNewsletterDelivery.API.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             try
             {
