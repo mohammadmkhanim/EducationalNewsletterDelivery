@@ -9,7 +9,7 @@ namespace EducationalNewsletterDelivery.DataLayer.Repository.IRepositories
 {
     public interface IUserRepository : IGenericRepository<User>
     {
-        public Task<bool> ExisUserBytUsernameAsync(string username);
+        public Task<bool> ExisUserByUsernameAsync(string username);
         public Task<bool> ExistUserByIdAsync(int id);
         public Task PromoteUserToAdminRoleAsync(int id);
         public Task DemoteUserToUserRoleAsync(int id);

@@ -54,7 +54,6 @@ namespace EducationalNewsletterDelivery.API.Controllers
                 }
                 await _unitOfWork.SaveAsync();
                 return Ok();
-
             }
             catch (Exception ex)
             {
@@ -84,7 +83,6 @@ namespace EducationalNewsletterDelivery.API.Controllers
                 var userNewsletters = await _unitOfWork.NewsletterRepository.GetUserNewslettersAsync(_userId);
                 var userNewsletterDTOs = _mapper.Map<List<NewsletterDTO>>(userNewsletters);
                 return Ok(userNewsletterDTOs);
-
             }
             catch (Exception ex)
             {

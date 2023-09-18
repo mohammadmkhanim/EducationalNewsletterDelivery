@@ -26,17 +26,12 @@ namespace EducationalNewsletterDelivery.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<NewsletterDTO>>> GetAsync()
+        public async Task<ActionResult> GetAsync()
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
                 var newsletterDTOs = await GetNewslettersAsync();
                 return Ok(newsletterDTOs);
-
             }
             catch (Exception ex)
             {
@@ -46,7 +41,7 @@ namespace EducationalNewsletterDelivery.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<NewsletterDTO>> GetAsync(int id)
+        public async Task<ActionResult> GetAsync(int id)
         {
             try
             {

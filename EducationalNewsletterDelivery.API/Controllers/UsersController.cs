@@ -28,17 +28,42 @@ namespace EducationalNewsletterDelivery.API.Controllers
         [HttpPost("{id}")]
         public async Task<IActionResult> PromoteUserToAdminAsync(int id)
         {
-            await _unitOfWork.UserRepository.PromoteUserToAdminRoleAsync(id);
-            await _unitOfWork.SaveAsync();
-            return Ok();
+            try
+            {
+                if (!await _unitOfWork.UserRepository.ExistUserByIdAsync(id))
+                {
+                    return BadRequest("The user does not exist.");
+                }
+                await _unitOfWork.UserRepository.PromoteUserToAdminRoleAsync(id);
+                await _unitOfWork.SaveAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return StatusCode(500, _defaultBackendErrorMessage);
+            }
         }
 
         [HttpPost("{id}")]
         public async Task<IActionResult> DemoteUserToUserAsync(int id)
         {
-            await _unitOfWork.UserRepository.DemoteUserToUserRoleAsync(id);
-            await _unitOfWork.SaveAsync();
-            return Ok();
+            try
+            {
+                if (!await _unitOfWork.UserRepository.ExistUserByIdAsync(id))
+                {
+                    return BadRequest("The user does not exist.");
+                }
+                await _unitOfWork.UserRepository.DemoteUserToUserRoleAsync(id);
+                await _unitOfWork.SaveAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return StatusCode(500, _defaultBackendErrorMessage);
+            }
+
         }
     }
 }

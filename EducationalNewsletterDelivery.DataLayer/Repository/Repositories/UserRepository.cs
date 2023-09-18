@@ -24,7 +24,7 @@ namespace EducationalNewsletterDelivery.DataLayer.Repository.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
         }
 
-        public async Task<bool> ExisUserBytUsernameAsync(string username)
+        public async Task<bool> ExisUserByUsernameAsync(string username)
         {
             return await _context.Users.AnyAsync(u => u.Username == username);
         }

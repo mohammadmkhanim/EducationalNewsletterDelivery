@@ -38,7 +38,7 @@ namespace EducationalNewsletterDelivery.API.Controllers
         {
           return BadRequest(ModelState);
         }
-        if (await _unitOfWork.UserRepository.ExisUserBytUsernameAsync(authUserDTO.Username))
+        if (await _unitOfWork.UserRepository.ExisUserByUsernameAsync(authUserDTO.Username))
         {
           return BadRequest("The username has already exist.");
         }
